@@ -144,12 +144,12 @@ struct Point
     }
 };
 
-Point operator+(const Vector& v, const Point p)
+inline Point operator+(const Vector& v, const Point p)
 {
     return Point { v.x + p.x, v.y + p.y, v.z + p.z };
 }
 
-Point operator-(const Vector& v, const Point p)
+inline Point operator-(const Vector& v, const Point p)
 {
     return Point { v.x - p.x, v.y - p.y, v.z - p.z };
 }
