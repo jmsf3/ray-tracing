@@ -207,6 +207,6 @@ inline Vector cross(const Vector& u, const Vector& v)
 
 inline std::ostream& operator<<(std::ostream& os, const Vector& v)
 {
-    os << "{" << v.x << ", " << v.y << ", " << v.z << "}";
+    os << "<" << v.x << ", " << v.y << ", " << v.z << ">";
     return os;
 }
