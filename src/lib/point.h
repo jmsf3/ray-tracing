@@ -128,9 +128,9 @@ struct Point
         return x == q.x && y == q.y && z == q.z;
     }
 
-    bool operator!=(const Point& other) const
+    bool operator!=(const Point& q) const
     {
-        return !(*this == other);
+        return x != q.x || y != q.y || z != q.z;
     }
 
     Point abs() const
