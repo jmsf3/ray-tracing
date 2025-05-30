@@ -156,6 +156,6 @@ inline Point operator-(const Vector& v, const Point p)
 
 inline std::ostream& operator<<(std::ostream& os, const Point& p)
 {
-    os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
+    os << "Point(" << p.x << ", " << p.y << ", " << p.z << ")";
     return os;
 }
