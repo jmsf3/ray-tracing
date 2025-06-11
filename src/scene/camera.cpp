@@ -1,17 +1,22 @@
 #include <cassert>
+#include <cmath>
 #include "scene/camera.h"
 
-Camera::Camera(Point camera_center, Point image_center, Vector up,
-               uint32_t height, uint32_t width) : camera_center { camera_center },
-                                                  image_center { image_center },
-                                                  up { up },
-                                                  height { height },
-                                                  width { width }
+Camera::Camera(Point center, Point target, Vector up, float vertical_fov,
+               uint32_t pixel_height, uint32_t pixel_width) : center { center },
+                                                              target { target },
+                                                              up { up },
+                                                              vertical_fov { vertical_fov },
+                                                              pixel_height { pixel_height },
+                                                              pixel_width { pixel_width }
 {
-    assert(height != 0 && width != 0);
-    distance_to_image = (image_center - camera_center).norm();
+    assert(pixel_height != 0 && pixel_width != 0);
+    aspect_ratio = static_cast<float>(pixel_width) / static_cast<float>(pixel_height);
 
-    w = image_center - camera_center;
+    sensor_height = 2.0f * std::tan(vertical_fov / 2.0f);
+    sensor_width = aspect_ratio * sensor_height;
+
+    w = target - center;
     w = w.normalized();
     w = -w;
 
@@ -19,12 +24,16 @@ Camera::Camera(Point camera_center, Point image_center, Vector up,
     v = v.normalized();
 
     u = cross(v, w);
-    lower_left_pixel = image_center - (width / 2.0f) * u - (height / 2.0f) * v;
+    lower_left_pixel = center - (sensor_width / 2.0f) * u - (sensor_height / 2.0f) * v - w;
 }
 
 Ray Camera::cast_ray(const uint32_t& px, const uint32_t& py) const
 {
-    Point pixel = lower_left_pixel + px * u + py * v;
-    Vector direction = (pixel - camera_center).normalized();
-    return Ray { camera_center, direction };
+    float sx = (px * sensor_width) / (pixel_width - 1);
+    float sy = (py * sensor_height) / (pixel_height - 1);
+
+    Point pixel = lower_left_pixel + sx * u + sy * v;
+    Vector direction = (pixel - center).normalized();
+
+    return Ray { center, direction };
 }

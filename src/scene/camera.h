@@ -8,19 +8,23 @@
 class Camera
 {
 private:
-    Point camera_center {};
-    Point image_center {};
+    Point center {};
+    Point target {};
 
     Vector up {};
     Vector u, v, w {};
 
-    float distance_to_image {};
-    uint32_t height, width {};
+    float vertical_fov {};
+    float aspect_ratio {};
+
+    float sensor_height, sensor_width {};   // world dimensions
+    uint32_t pixel_height, pixel_width {};  // pixel dimensions
+
     Point lower_left_pixel {};
 
 public:
-    explicit Camera(Point camera_center, Point image_center, Vector up,
-                    uint32_t height, uint32_t width);
+    explicit Camera(Point center, Point target, Vector up, float vertical_fov,
+                    uint32_t pixel_height, uint32_t pixel_width);
 
     Camera() = default;
     Camera(const Camera &) = default;
