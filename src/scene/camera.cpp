@@ -11,16 +11,20 @@ Camera::Camera(Point camera_center, Point image_center, Vector up,
     assert(height != 0 && width != 0);
     distance_to_image = (image_center - camera_center).norm();
 
-    w = -(image_center - camera_center).normalized();
-    v = (up - w * (dot(w, up) / pow(w.norm(), 2))).normalized();
-    u = cross(v, w).normalized();
+    w = image_center - camera_center;
+    w = w.normalized();
+    w = -w;
 
-    lower_left_pixel = image_center - u * ((width - 1) / 2.0f) - v * ((height - 1) / 2.0f);
+    v = up - (dot(w, up) / dot(w, w)) * w;
+    v = v.normalized();
+
+    u = cross(v, w);
+    lower_left_pixel = image_center - (width / 2.0f) * u - (height / 2.0f) * v;
 }
 
 Ray Camera::cast_ray(const uint32_t& px, const uint32_t& py) const
 {
-    Point pixel = lower_left_pixel + u * px + v * py;
+    Point pixel = lower_left_pixel + px * u + py * v;
     Vector direction = (pixel - camera_center).normalized();
-    return Ray(camera_center, direction);
+    return Ray { camera_center, direction };
 }

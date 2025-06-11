@@ -13,12 +13,12 @@ struct Ray
 
     Ray() = default;
     Ray(const Ray&) = default;
-	~Ray() = default;
-	Ray& operator=(const Ray&) = default;
+    ~Ray() = default;
+    Ray& operator=(const Ray&) = default;
 
-    Point at(float t) const
+    Point at(const float& t) const
     {
-        return origin + direction * t;
+        return origin + t * direction;
     }
 };
 

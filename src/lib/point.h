@@ -144,14 +144,35 @@ struct Point
     }
 };
 
-inline Point operator+(const Vector& v, const Point p)
+inline Point operator+(const Vector& v, const Point& p)
 {
     return Point { v.x + p.x, v.y + p.y, v.z + p.z };
 }
 
-inline Point operator-(const Vector& v, const Point p)
+inline Point operator-(const Vector& v, const Point& p)
 {
     return Point { v.x - p.x, v.y - p.y, v.z - p.z };
+}
+
+inline Point operator+(const float& s, const Point& p)
+{
+    return Point { s + p.x, s + p.y, s + p.z };
+}
+
+inline Point operator-(const float& s, const Point& p)
+{
+    return Point { s - p.x, s - p.y, s - p.z };
+}
+
+inline Point operator*(const float& s, const Point& p)
+{
+    return Point { s * p.x, s * p.y, s * p.z };
+}
+
+inline Point operator/(const float& s, const Point& p)
+{
+    assert(p.x != 0 && p.y != 0 && p.z != 0);
+    return Point { s / p.x, s / p.y, s / p.z };
 }
 
 inline std::ostream& operator<<(std::ostream& os, const Point& p)

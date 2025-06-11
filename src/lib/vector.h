@@ -22,8 +22,8 @@ struct Vector
     explicit Vector(float s) : x { s }, y { s }, z { s } {}
 
     Vector(const Vector&) = default;
-	~Vector() = default;
-	Vector& operator=(const Vector&) = default;
+    ~Vector() = default;
+    Vector& operator=(const Vector&) = default;
 
     float& operator[](const size_t& idx)
     {
@@ -192,6 +192,27 @@ struct Vector
         return *this;
     }
 };
+
+inline Vector operator+(const float& s, const Vector& v)
+{
+    return Vector { s + v.x, s + v.y, s + v.z };
+}
+
+inline Vector operator-(const float& s, const Vector& v)
+{
+    return Vector { s - v.x, s - v.y, s - v.z };
+}
+
+inline Vector operator*(const float& s, const Vector& v)
+{
+    return Vector { s * v.x, s * v.y, s * v.z };
+}
+
+inline Vector operator/(const float& s, const Vector& v)
+{
+    assert(v.x != 0 && v.y != 0 && v.z != 0);
+    return Vector { s / v.x, s / v.y, s / v.z };
+}
 
 inline float dot(const Vector& u, const Vector& v)
 {
