@@ -1,6 +1,6 @@
 #include <cassert>
 #include <cmath>
-#include "scene/camera.h"
+#include "camera.h"
 
 Camera::Camera(Point center, Point target, Vector up, float vertical_fov,
                uint32_t pixel_height, uint32_t pixel_width) : center { center },

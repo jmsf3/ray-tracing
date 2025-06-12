@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <ostream>
-#include "lib/vector.h"
+#include "vector.h"
 
 struct Point
 {

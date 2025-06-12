@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lib/point.h"
-#include "lib/vector.h"
+#include "../lib/point.h"
+#include "../lib/vector.h"
 
 namespace RT
 {

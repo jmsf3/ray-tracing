@@ -1,9 +1,9 @@
 #pragma once
 
-#include "lib/point.h"
-#include "lib/ray.h"
-#include "lib/vector.h"
-#include "raytracer/trace.h"
+#include "../lib/point.h"
+#include "../lib/ray.h"
+#include "../lib/vector.h"
+#include "../raytracer/trace.h"
 
 namespace Geometry
 {

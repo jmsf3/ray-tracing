@@ -1,8 +1,8 @@
 #pragma once
 
 #include <ostream>
-#include "lib/point.h"
-#include "lib/vector.h"
+#include "point.h"
+#include "vector.h"
 
 struct Ray
 {

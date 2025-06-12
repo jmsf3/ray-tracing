@@ -1,5 +1,5 @@
 #include <cmath>
-#include "geometry/geometry.h"
+#include "geometry.h"
 
 namespace Geometry
 {

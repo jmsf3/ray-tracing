@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include "lib/point.h"
-#include "lib/ray.h"
-#include "lib/vector.h"
+#include "../lib/point.h"
+#include "../lib/ray.h"
+#include "../lib/vector.h"
 
 class Camera
 {
