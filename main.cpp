@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <string>
 #include <sstream>
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include <iomanip>
+
 #include "src/geometry/geometry.h"
 #include "src/lib/ray.h"
 #include "src/lib/point.h"
@@ -13,120 +13,79 @@
 
 namespace fs = std::filesystem;
 
-template <typename T>
-T clamp(T value, T min, T max) {
-    return (value < min) ? min : (value > max) ? max : value;
-}
-
-Vector color(const Ray& ray, const Geometry::Sphere& sphere, const Geometry::Plane& plane)
+// Function to return the color of the ray
+Vector color(const Ray& r, const Geometry::Sphere& sphere, const Geometry::Plane& plane)
 {
-    if (sphere.hit(ray).hit)
-        return Vector(1.0f, 0.0f, 0.0f);
+    if (sphere.hit(r).hit)
+        return Vector(1.0f, 0.0f, 0.0f);  // red
 
-    if (plane.hit(ray).hit)
-        return Vector(0.0f, 1.0f, 0.0f);
+    if (plane.hit(r).hit)
+        return Vector(0.0f, 1.0f, 0.0f);  // green
 
-    Vector unit_direction = ray.direction.normalized();
+    Vector unit_direction = r.direction.normalized();
     float t = 0.5f * (unit_direction.y + 1.0f);
     return Vector(1.0f, 1.0f, 1.0f) * (1.0f - t) + Vector(0.5f, 0.7f, 1.0f) * t;
 }
 
-void render_scene(const Camera& camera, const std::string& filename, const Geometry::Sphere& sphere, const Geometry::Plane& plane)
-{
-    std::ofstream image(filename);
-    if (!image)
-    {
-        std::cerr << "Error creating " << filename << "\n";
-        return;
-    }
-
-    uint32_t image_width = camera.get_pixel_width();
-    uint32_t image_height = camera.get_pixel_height();
-
-    image << "P3\n" << image_width << " " << image_height << "\n255\n";
-
-    for (int j = image_height - 1; j >= 0; --j)
-    {
-        for (int i = 0; i < image_width; ++i)
-        {
-            Vector pixel_color = color(camera.cast_ray(i, j), sphere, plane);
-
-            int red   = static_cast<int>(255.99f * clamp(pixel_color.x, 0.0f, 1.0f));
-            int green = static_cast<int>(255.99f * clamp(pixel_color.y, 0.0f, 1.0f));
-            int blue  = static_cast<int>(255.99f * clamp(pixel_color.z, 0.0f, 1.0f));
-
-            image << red << " " << green << " " << blue << "\n";
-        }
-    }
-
-    image.close();
-    std::cout << "Image saved to " << filename << "\n";
-}
-
-void ensure_output_folder(const std::string& folder) {
-    if (!fs::exists(folder)) {
-        fs::create_directory(folder);
-        std::cout << "Created output folder: " << folder << "\n";
-    }
-
-    std::ofstream gitignore(".gitignore", std::ios::app);
-    std::ifstream check(".gitignore");
-    std::string line;
-    bool already_ignored = false;
-
-    while (getline(check, line)) {
-        if (line == folder + "/") {
-            already_ignored = true;
-            break;
-        }
-    }
-
-    if (!already_ignored) {
-        gitignore << folder << "/" << "\n";
-        std::cout << "Added '" << folder << "/' to .gitignore\n";
-    }
-}
-
 int main()
 {
-    const std::string output_folder = "imagens_output";
-    ensure_output_folder(output_folder);
-
-    uint32_t image_height = 720;
-    uint32_t image_width = 1280;
+    uint32_t pixel_height = 720;
+    uint32_t pixel_width = 1280;
     Geometry::Plane plane(Point(0.0f, 0.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f));
 
-    int image_counter = 1;
-    char choice = 'S';
+    // Create the output folder if it doesn't exist
+    std::string output_dir = "output_images";
+    fs::create_directories(output_dir);
 
-    while (choice == 'S' || choice == 's') {
+    int image_counter = 1;
+    char keep_going = 'Y';
+
+    while (keep_going == 'Y' || keep_going == 'y')
+    {
         float sx, sy, sz;
-        std::cout << "Digite uma esfera (x y z): ";
+        std::cout << "Enter sphere position (x y z): ";
         std::cin >> sx >> sy >> sz;
+        Geometry::Sphere sphere(Point(sx, sy, sz), 1.0f);
 
         float cx, cy, cz;
-        std::cout << "Digite a posição da câmera (x y z): ";
+        std::cout << "Enter camera position (x y z): ";
         std::cin >> cx >> cy >> cz;
+        Point center(cx, cy, cz);
 
         float tx, ty, tz;
-        std::cout << "Digite a posição do target (x y z): ";
+        std::cout << "Enter target position (x y z): ";
         std::cin >> tx >> ty >> tz;
+        Point target(tx, ty, tz);
 
-        Geometry::Sphere sphere(Point(sx, sy, sz), 1.0f);
-        Point camera_position(cx, cy, cz);
-        Point look_at(tx, ty, tz);
-        Vector up_vector(0.0f, 1.0f, 0.0f);
+        Vector up(0.0f, 1.0f, 0.0f);
         float vertical_fov = 90.0f * M_PI / 180.0f;
+        Camera camera(center, target, up, vertical_fov, pixel_height, pixel_width);
 
-        Camera camera(camera_position, look_at, up_vector, vertical_fov, image_height, image_width);
+        // Image filename
+        std::ostringstream filename;
+        filename << output_dir << "/image" << image_counter << ".ppm";
 
-        std::stringstream filename;
-        filename << output_folder << "/imagem" << image_counter << ".ppm";
-        render_scene(camera, filename.str(), sphere, plane);
+        std::ofstream image_file(filename.str());
+        image_file << "P3\n" << pixel_width << " " << pixel_height << "\n255\n";
+
+        for (int j = pixel_height - 1; j >= 0; j--)
+        {
+            for (int i = 0; i < pixel_width; i++)
+            {
+                Vector c = color(camera.cast_ray(i, j), sphere, plane);
+                int ir = static_cast<int>(255.99f * (c.x < 0.0f ? 0.0f : (c.x > 1.0f ? 1.0f : c.x)));
+                int ig = static_cast<int>(255.99f * (c.y < 0.0f ? 0.0f : (c.y > 1.0f ? 1.0f : c.y)));
+                int ib = static_cast<int>(255.99f * (c.z < 0.0f ? 0.0f : (c.z > 1.0f ? 1.0f : c.z)));
+                image_file << ir << " " << ig << " " << ib << "\n";
+            }
+        }
+
+        image_file.close();
+        std::cout << "Image saved as " << filename.str() << "\n";
+
+        std::cout << "Do you want to generate another? (Y/N): ";
+        std::cin >> keep_going;
         image_counter++;
-
-        std::cout << "Quer gerar outra? (S/N): ";
-        std::cin >> choice;
     }
 
     return 0;

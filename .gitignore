@@ -1,4 +1,3 @@
 .vscode
-main
-image.ppmimagens_output/
-imagens_output/
+raytracer
+output_images/
