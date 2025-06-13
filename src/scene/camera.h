@@ -26,6 +26,9 @@ public:
     explicit Camera(Point center, Point target, Vector up, float vertical_fov,
                     uint32_t pixel_height, uint32_t pixel_width);
 
+    uint32_t get_pixel_width() const { return pixel_width; }
+    uint32_t get_pixel_height() const { return pixel_height; }
+
     Camera() = default;
     Camera(const Camera &) = default;
     ~Camera() = default;

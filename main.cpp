@@ -34,7 +34,7 @@ Vector color(const Ray& ray)
     return Vector(1.0f, 1.0f, 1.0f) * (1.0f - t) + Vector(0.5f, 0.7f, 1.0f) * t;
 }
 
-void render_scene(const Camera& camera, const std::string& filename, uint32_t image_width, uint32_t image_height)
+void render_scene(const Camera& camera, const std::string& filename)
 {
     std::ofstream image(filename);
     if (!image)
@@ -42,6 +42,9 @@ void render_scene(const Camera& camera, const std::string& filename, uint32_t im
         std::cerr << "Error creating " << filename << "\n";
         return;
     }
+
+    uint32_t image_width = camera.get_pixel_width();
+    uint32_t image_height = camera.get_pixel_height();
 
     image << "P3\n" << image_width << " " << image_height << "\n255\n";
 
@@ -76,7 +79,7 @@ int main()
 
     Camera camera { camera_position, look_at, up_vector, vertical_fov, image_height, image_width };
 
-    render_scene(camera, "output.ppm", image_width, image_height);
+    render_scene(camera, "output.ppm");
 
     return 0;
 }
