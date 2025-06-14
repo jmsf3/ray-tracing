@@ -10,9 +10,6 @@ namespace Geometry
         Point position {};
         Vector normal {};
 
-        // To simplify the problem, we find the
-        // intersection in a coordinate system
-        // where the sphere is centered at the origin.
         Vector o = ray.origin - center;
         Vector d = ray.direction;
         float r = radius;
@@ -24,7 +21,7 @@ namespace Geometry
 
         if (discriminant < 0.0f)
         {
-            return RT::Trace { hit, origin, position, normal };
+            return RT::Trace { hit, 0.0f, origin, position, normal };
         }
 
         float t {};
@@ -41,14 +38,14 @@ namespace Geometry
         }
         else
         {
-            return RT::Trace { hit, origin, position, normal };
+            return RT::Trace { hit, 0.0f, origin, position, normal };
         }
 
         hit = true;
         position = ray.at(t);
         normal = (position - center).normalized();
 
-        return RT::Trace { hit, origin, position, normal };
+        return RT::Trace { hit, t, origin, position, normal };
     }
 
     RT::Trace Plane::hit(const Ray& ray) const
@@ -63,29 +60,25 @@ namespace Geometry
         Point p = this->point;
         Vector n = this->normal;
 
-        // When comparing floating-point numbers,
-        // it's better to check if the difference
-        // between them is smaller than a value epsilon
-        // rather than checking for exact equality.
         constexpr float epsilon = 1e-6f;
 
         if (std::abs(dot(n, d)) < epsilon)
         {
-            return RT::Trace { hit, origin, position, normal };
+            return RT::Trace { hit, 0.0f, origin, position, normal };
         }
 
         float t = dot(n, p - o) / dot(n, d);
 
         if (t < 0.0f)
         {
-            return RT::Trace { hit, origin, position, normal };
+            return RT::Trace { hit, 0.0f, origin, position, normal };
         }
 
         hit = true;
         position = ray.at(t);
         normal = n.normalized();
 
-        return RT::Trace { hit, origin, position, normal };
+        return RT::Trace { hit, t, origin, position, normal };
     }
 
     RT::Trace Triangle::hit(const Ray& ray) const
@@ -97,6 +90,6 @@ namespace Geometry
         Point position {};
         Vector normal {};
 
-        return RT::Trace { hit, origin, position, normal };
+        return RT::Trace { hit, 0.0f, origin, position, normal };
     }
 }

@@ -13,33 +13,46 @@ T clamp(T value, T min, T max) {
     return (value < min) ? min : (value > max) ? max : value;
 }
 
-Geometry::Sphere sphere_1(Point(-3.0f, 6.0f, -2.0f), 1.0f);
-Geometry::Sphere sphere_2(Point(+2.0f, 5.0f, -12.0f), 7.0f);
+Geometry::Sphere sphere_1(Point(0.0f, 0.0f, 5.0f), 1.0f);
+Geometry::Sphere sphere_2(Point(10.0f, 0.0f, 10.0f), 2.0f);
 Geometry::Plane plane(Point(0.0f, 0.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f));
 
-Vector color(const Ray& ray)
-{
+Vector color(const Ray& ray){
+    float closest_t = std::numeric_limits<float>::max();
+    Vector final_color;
 
-    if (plane.hit(ray).hit)
-    {
-        return Vector(0.0f, 1.0f, 0.0f);
+    bool any_hit = false;
+
+    auto hit1 = sphere_1.hit(ray);
+    if (hit1.hit && hit1.t < closest_t) {
+        closest_t = hit1.t;
+        final_color = Vector(1.0f, 0.0f, 0.0f);
+        any_hit = true;
     }
 
-    if (sphere_1.hit(ray).hit)
-    {
-        return Vector(1.0f, 0.0f, 0.0f);
+    auto hit2 = sphere_2.hit(ray);
+    if (hit2.hit && hit2.t < closest_t) {
+        closest_t = hit2.t;
+        final_color = Vector(1.0f, 1.0f, 0.0f);
+        any_hit = true;
     }
 
-    if (sphere_2.hit(ray).hit)
-    {
-        return Vector(1.0f, 1.0f, 0.0f);
+    auto hit_plane = plane.hit(ray);
+    if (hit_plane.hit && hit_plane.t < closest_t) {
+        closest_t = hit_plane.t;
+        final_color = Vector(0.0f, 1.0f, 0.0f);
+        any_hit = true;
     }
 
-    Vector unit_direction = ray.direction.normalized();
-    float t = 0.5f * (unit_direction.y + 1.0f);
+    if (!any_hit) {
+        Vector unit_direction = ray.direction.normalized();
+        float t = 0.5f * (unit_direction.y + 1.0f);
+        return Vector(1.0f, 1.0f, 1.0f) * (1.0f - t) + Vector(0.5f, 0.7f, 1.0f) * t;
+    }
 
-    return Vector(1.0f, 1.0f, 1.0f) * (1.0f - t) + Vector(0.5f, 0.7f, 1.0f) * t;
+    return final_color;
 }
+
 
 void render_scene(const Camera& camera, const std::string& filename, uint32_t image_width, uint32_t image_height)
 {
@@ -72,8 +85,8 @@ void render_scene(const Camera& camera, const std::string& filename, uint32_t im
 
 int main()
 {
-    Point camera_position { 0.0f, 5.0f, 5.0f };
-    Point look_at { 0.0f, 3.0f, -12.0f };
+    Point camera_position { 0.0f, 1.0f, 1.0f };
+    Point look_at { 0.0f, 1.0f, 2.0f };
     Vector up_vector { 0.0f, 1.0f, 0.0f };
 
     float vertical_fov = 90.0f * M_PI / 180.0f;
